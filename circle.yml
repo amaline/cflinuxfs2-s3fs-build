@@ -1,4 +1,10 @@
 machine:
+  environment:
+    GITHUB_PROJECT: amaline/cflinuxfs2-s3fs-build
+    PROJECT_REPOSITORY: github.com/amaline/cflinuxfs2-s3fs-build.git
+    GITHUB_RELEASE: v1.80
+    GITHUB_RELEASE_NOTE: This is compiled for cflinuxfs2 cloud foundry stack
+    ARTIFACT_NAME: s3fs.tgz
   services:
     - docker
 
@@ -7,4 +13,12 @@ dependencies:
      - docker info
      - docker build -t build-img .
      - docker create --name build-cont build-img
-     - docker cp build-cont:/usr/local/bin/s3fs $CIRCLE_ARTIFACTS/s3fs
+     - docker cp build-cont:/usr/local/bin/s3fs s3fs
+     - chmod +x ./makesources.sh ./deploy.sh
+     - ./makesources.sh
+
+deployment:
+  hub:
+    branch: master 
+    commands:
+       - ./deploy.sh

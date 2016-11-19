@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 #   PROGRAM: deploy.sh
-#   PURPOSE: Creates a github release and uploads nginx binary in gzip tar format to github
+#   PURPOSE: Creates a github release and uploads s3fs binary in gzip tar format to github
 #   EXIT CODES:
 #               128 - repository tag already exists.  update circle.yml with new version number.
 #               100 - no release ID was returned from github when release creation was attempted.
@@ -15,6 +15,8 @@ echo "GITHUB_RELEASE_NOTE" = $GITHUB_RELEASE_NOTE
 echo "PROJECT_REPOSITORY= $PROJECT_REPOSITORY"
 echo "CIRCLE_ARTIFACTS  = $CIRCLE_ARTIFACTS"
 echo "ARTIFACT_NAME     = $ARTIFACT_NAME"
+
+RELEASE="Release ${GITHUB_RELEASE} for s3fs build for cflinuxfs2"
 
 echo "Exiting on any error"
 set -e
@@ -32,7 +34,7 @@ sleep 15
 echo "Creating release..."
 MD5SUM=$(md5sum ${CIRCLE_ARTIFACTS}/$ARTIFACT_NAME | awk '{print $1}')
 echo "  build create release json"
-echo -e "{\n\"tag_name\": \"${GITHUB_RELEASE}\",\n\"target_commitish\": \"master\",\n\"name\": \"release ${GITHUB_RELEASE} for custom nginx build\",\n\"body\": \"release ${GITHUB_RELEASE} for custom nginx build for cloud foundry s3 proxy.<br />  - md5 checksum: ${MD5SUM}<br />  - ${GITHUB_RELEASE_NOTE}\",\"draft\": false,\n\"prerelease\": false\n}" > json.json
+echo -e "{\n\"tag_name\": \"${GITHUB_RELEASE}\",\n\"target_commitish\": \"master\",\n\"name\": \"${RELEASE}\",\n\"body\": \"Release ${GITHUB_RELEASE}<br />  - md5 checksum: ${MD5SUM}<br />  - ${GITHUB_RELEASE_NOTE}\",\"draft\": false,\n\"prerelease\": false\n}" > json.json
 
 echo "  issuing command to github to create release"
 curl -# -XPOST -H 'Content-Type:application/json' -H 'Accept:application/json' --data-binary @json.json https://api.github.com/repos/${GITHUB_PROJECT}/releases?access_token=${GITHUB_TOKEN} -o response.json
