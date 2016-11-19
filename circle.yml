@@ -5,6 +5,6 @@ machine:
 dependencies:
   override:
      - docker info
-     - docker build -t build-img -f Dockerfile
+     - docker build -t build-img .
      - docker create --name build-cont build-img
      - docker cp build-cont:/usr/local/bin/s3fs $CIRCLE_ARTIFACTS/s3fs
