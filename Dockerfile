@@ -8,3 +8,5 @@ RUN ./autogen.sh
 RUN ./configure
 RUN make
 RUN sudo make install
+
+CMD echo "s3fs built"
